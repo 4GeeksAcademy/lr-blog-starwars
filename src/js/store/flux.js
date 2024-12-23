@@ -12,7 +12,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			]
+			],
+			personajes: [
+
+			],
+			planetas: [
+
+			],
+			personajesfavoritos: [
+
+			],
+			planetasfavoritos: [
+
+			],
+			propiedadurl: ""
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -20,9 +33,84 @@ const getState = ({ getStore, getActions, setStore }) => {
 				getActions().changeColor(0, "green");
 			},
 			loadSomeData: () => {
-				/**
-					fetch().then().then(data => setStore({ "foo": data.bar }))
-				*/
+				const store = getStore();
+				console.log("se cargo la pagina")
+				fetch("https://swapi.dev/api/people")
+					.then((response) => response.json())
+					.then((data) => {
+						console.log(data.results)
+						setStore({personajes: data.results})
+
+					}
+				)	
+			},
+			getPlanetas: () => {
+				console.log("cargar planetas")
+				fetch("https://swapi.dev/api/planets")
+					.then((response) => response.json())
+					.then((data) => {
+						console.log(data.results)
+						setStore({planetas: data.results})
+
+					})
+			},
+			añadirpersonajefavorito: (nombre) => {
+				console.log("Se añadirá a favoritos: " + nombre);
+				const store = getStore();
+				if (store.personajesfavoritos.includes(nombre)){
+					setStore({...store,
+						personajesfavoritos: store.personajesfavoritos.filter(favorito => favorito !== nombre) 
+					});
+				} else {
+					setStore({
+						...getStore(),
+						personajesfavoritos: [...(getStore().personajesfavoritos || []), nombre]
+					});
+					console.log(getStore().personajesfavoritos);
+					
+				}
+				
+			},
+			eliminarpersonajeFavorito: (nombre) => {
+				const store = getStore();
+				setStore({...store,
+					personajesfavoritos: store.personajesfavoritos.filter(favorito => favorito !== nombre) 
+				});
+			
+				console.log("Favorito eliminado:", nombre);
+			},
+			añadirplanetafavorito: (nombre) => {
+				const store = getStore();
+				console.log("Se añadirá a favoritos: " + nombre);
+				if(store.planetasfavoritos.includes(nombre)) {
+					setStore({...store,
+						planetasfavoritos: store.planetasfavoritos.filter(favorito => favorito !== nombre) 
+					});
+				} else {
+
+					setStore({
+						...getStore(),
+						planetasfavoritos: [...(getStore().planetasfavoritos || []), nombre]
+					});
+				}
+				console.log(getStore().planetasfavoritos);
+			}
+			,
+			eliminarplanetaFavorito: (nombre) => {
+				const store = getStore();
+				setStore({...store,
+					planetasfavoritos: store.planetasfavoritos.filter(favorito => favorito !== nombre) 
+				});
+			
+				console.log("Favorito eliminado:", nombre);
+			},
+			traerLeerMas: (urlitem) => {
+				const store = getStore();
+				var url = urlitem;
+				const arr = url.split('/')
+				const idfinal = arr[arr.length-2]
+				setStore({propiedadurl: idfinal})
+				console.log(store.propiedadurl)
 			},
 			changeColor: (index, color) => {
 				//get the store
@@ -39,7 +127,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({ demo: demo });
 			}
 		}
+		}
 	};
-};
+
 
 export default getState;
